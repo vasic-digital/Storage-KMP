@@ -1,0 +1,24 @@
+sequenceDiagram
+    participant App as Application
+    participant Svc as NetworkStorageService
+    participant IO as PlatformFileIO
+
+    App->>Svc: connect()
+    Svc-->>App: Result<Unit>
+
+    App->>Svc: listFiles("/docs")
+    Svc-->>App: Flow<Result<List<StorageDocument>>>
+
+    App->>Svc: downloadFile("/docs/file.txt", "/local/file.txt")
+    loop Progress Updates
+        Svc-->>App: StorageOperation(IN_PROGRESS, 30%)
+        Svc-->>App: StorageOperation(IN_PROGRESS, 70%)
+    end
+    Svc->>IO: writeFileBytes("/local/file.txt", data)
+    Svc-->>App: StorageOperation(COMPLETED, 100%)
+
+    App->>Svc: getQuota()
+    Svc-->>App: Result<StorageQuota>
+
+    App->>Svc: disconnect()
+    Svc-->>App: Result<Unit>

@@ -1,0 +1,38 @@
+graph TD
+    subgraph "Storage-KMP"
+        NSS[NetworkStorageService<br/>interface]
+        SM[StorageModels<br/>StorageType, StorageDocument,<br/>StorageOperation, StorageQuota]
+        PFIO[PlatformFileIO<br/>interface]
+        PI[ProtocolInfo<br/>ImplementationTier]
+    end
+
+    subgraph "Dependencies"
+        KC[kotlinx-coroutines-core<br/>Flow, suspend]
+    end
+
+    subgraph "Consuming App (e.g., Yole)"
+        WD[WebDavService]
+        FTP[FtpService]
+        SFTP[SftpService]
+        DB[DropboxService]
+        GD[GoogleDriveService]
+        OD[OneDriveService]
+        GIT[GitService]
+        S3[S3Service]
+    end
+
+    NSS --> KC
+    SM --> KC
+
+    WD -->|implements| NSS
+    FTP -->|implements| NSS
+    SFTP -->|implements| NSS
+    DB -->|implements| NSS
+    GD -->|implements| NSS
+    OD -->|implements| NSS
+    GIT -->|implements| NSS
+    S3 -->|implements| NSS
+
+    WD -->|uses| SM
+    FTP -->|uses| SM
+    WD -->|uses| PFIO
